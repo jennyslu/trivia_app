@@ -127,7 +127,29 @@ def add_or_search_questions():
 
 @api.route('/quizzes', methods=['POST'])
 def quiz():
-    pass
+    """
+    Play trivia game.
+    Request gets posted with
+     {'previous_questions': [],
+      'quiz_category': {'type': 'Science', 'id': '1'}}
+    Should return a question that was not previously seen already from the chosen category.
+    """
+    request_data = request.get_json()
+    category = Category.query.get(int(request_data['quiz_category']['id']))
+    # no category chosen
+    if category is None:
+        questions = Question.query.all()
+    else:
+        questions = category.questions
+    remaining_qs = [q for q in questions if q.id not in request_data["previous_questions"]]
+    # if there are still remaining questions
+    if remaining_qs:
+        next_q = remaining_qs[0].format()
+        new_prev_qs = request_data["previous_questions"].extend([next_q["id"]])
+        return jsonify({'success': True, 'question': next_q, 'previous_questions': new_prev_qs})
+    # no more remaining questions
+    else:
+        return jsonify({'success': True, 'question': None, 'previous_questions': request_data["previous_questions"]})
 
 
 @api.errorhandler(404)
