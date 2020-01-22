@@ -137,7 +137,7 @@ def quiz():
     """
     request_data = request.get_json()
     # no category chosen
-    if not request_data.get("quiz_category"):
+    if not request_data.get("quiz_category") or int(request_data.get("quiz_category").get("id")) == 0:
         questions = Question.query.all()
     else:
         category = Category.query.get(int(request_data['quiz_category']['id']))

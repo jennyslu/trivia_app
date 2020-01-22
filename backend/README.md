@@ -249,9 +249,83 @@ API will return three error types:
 
 #### DELETE /questions/<question_id>
 
+* General
+   * Request arguments: question_id (int)
+   * Returns success value, and deleted question_id
+   * Will return 404 if question doesn't exist
+* Sample `curl -X DELETE http://127.0.0.1:5000/questions/4`
+```
+{
+  "deleted": 4,
+  "success": true
+}
+```
+
 #### POST /questions
 
+* General
+    * Posting can either search or add question
+    * SEARCH request arguments: searchTerm (str)
+    * SEARCH returns success value, list of questions, total_questions, and current category
+    * ADD request arguments: question (str), answer (str), category (int), difficulty (int)
+    * ADD returns success value, new_question_id
+    * Will return 400 if request is not valid
+* Sample `curl -X POST http://127.0.0.1:5000/questions -H "Content-Type: application/json" -d '{"question": "question", "answer": "answer", "category": 5, "difficulty": 5}'`
+```
+{
+  "new_question_id": 32,
+  "success": true
+}
+```
+* Sample `curl -X POST http://127.0.0.1:5000/questions -H "Content-Type: application/json" -d '{"searchTerm": "title"}'`
+```
+{
+  "current_category": null,
+  "questions": [
+    {
+      "answer": "Maya Angelou",
+      "category": 4,
+      "category_name": "History",
+      "difficulty": 2,
+      "id": 5,
+      "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
+    },
+    {
+      "answer": "Edward Scissorhands",
+      "category": 5,
+      "category_name": "Entertainment",
+      "difficulty": 3,
+      "id": 6,
+      "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
+    }
+  ],
+  "success": true,
+  "total_questions": 2
+}
+```
+
 #### POST /quizzes
+
+* General
+   * Request arguments: previous_questions (list), quiz_category (dict)
+   * Returns success value, question, and previous questions list
+* Sample `curl -X POST http://127.0.0.1:5000/quizzes -H "Content-Type: application/json" -d '{"previous_questions": [], "quiz_category": {"type": "ALL", "id": "0"}}'`
+```
+{
+  "previous_questions": [
+    5
+  ],
+  "question": {
+    "answer": "Maya Angelou",
+    "category": 4,
+    "category_name": "History",
+    "difficulty": 2,
+    "id": 5,
+    "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
+  },
+  "success": true
+}
+```
 
 ## Testing
 To run the tests, run
