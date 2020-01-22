@@ -78,7 +78,8 @@ class TestAddSearchQuestions(object):
         assert response["new_question_id"]
 
     def test_add_question_failure(self, client):
-        response = client.post('/questions', json={'random': 'json'}).get_json()
+        response = client.post('/questions',
+                               json={'random': 'json'}).get_json()
         assert not response["success"]
         assert response["error"] == 400
 
@@ -86,13 +87,15 @@ class TestAddSearchQuestions(object):
 class TestDeleteQuestions(object):
     def test_delete_question_success(self, client):
         question_id = 5
-        response = client.delete('/questions/{}'.format(question_id)).get_json()
+        response = client.delete(
+            '/questions/{}'.format(question_id)).get_json()
         assert response["success"]
         assert response["deleted"] == question_id
 
     def test_delete_question_failure(self, client):
         question_id = 100
-        response = client.delete('/questions/{}'.format(question_id)).get_json()
+        response = client.delete(
+            '/questions/{}'.format(question_id)).get_json()
         assert not response["success"]
         assert response["error"] == 404
 

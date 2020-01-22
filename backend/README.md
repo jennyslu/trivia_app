@@ -44,9 +44,9 @@ From within the `backend` directory first ensure you are working using your crea
 Create an instance directory to hold secret values
 ```
 mkdir instance
-touch config.py
+touch instance/config.py
 ```
-Edit `config.py` to contain any secret values you want.
+Edit `instance/config.py` to contain any secret values you want.
 Also edit `config/development.py` to point to your local databsek.
 
 To run the server, execute:
