@@ -21,7 +21,9 @@ class Question(db.Model):
     answer = Column(String)
     difficulty = Column(Integer)
     # actually category ID
-    category = Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
+    category = Column(db.Integer,
+                      db.ForeignKey('categories.id'),
+                      nullable=False)
     question_category = db.relationship('Category', backref='question_category')
 
     def __init__(self, question, answer, category, difficulty):

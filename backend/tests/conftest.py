@@ -1,9 +1,9 @@
 import os
 
 import pytest
-from flask_sqlalchemy import SQLAlchemy
 
 from flaskr import create_app
+from flaskr.models import db
 
 with open(os.path.join(os.path.dirname(__file__), 'data.sql'), 'rb') as f:
     _data_sql = f.read().decode('utf8')
@@ -11,22 +11,19 @@ with open(os.path.join(os.path.dirname(__file__), 'data.sql'), 'rb') as f:
 
 @pytest.fixture(scope='session')
 def app():
-    app = create_app(test_config={
-        'TESTING': True,
-        'SQLALCHEMY_DATABASE_URI': 'postgresql://jlu@localhost:5432/trivia_test',
-        'SQLALCHEMY_TRACK_MODIFICATIONS': False
-    })
-    # binds the app to the current context
-    with app.app_context():
-        db = SQLAlchemy(app)
-        # create all tables
-        db.create_all()
+    app = create_app(
+        test_config={
+            'TESTING': True,
+            'SQLALCHEMY_DATABASE_URI': 'postgresql://jlu@localhost:5432/trivia_test',
+            'SQLALCHEMY_TRACK_MODIFICATIONS': False
+        })
+    # populate test database with test data
     db.engine.execute(_data_sql)
-
     yield app
+
     print('app teardown')
-    # for some reason this doesn't work - WHY????? db.drop_all()
-    db.engine.execute('DROP TABLE questions; DROP TABLE categories;')
+    db.drop_all()
+    # db.engine.execute('DROP TABLE questions; DROP TABLE categories;')
     db.session.close()
 
 

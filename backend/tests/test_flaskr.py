@@ -16,8 +16,8 @@ def test_hello(client):
 def test_get_categories(client):
     response = client.get('/categories').get_json()
     categories = {
-        "1": 'Science', "2": 'Art', "3": 'Geography', "4": 'History', "5": 'Entertainment',
-        "6": 'Sports'
+        "1": 'Science', "2": 'Art', "3": 'Geography', "4": 'History',
+        "5": 'Entertainment', "6": 'Sports'
     }
     assert response['success']
     assert response['categories'] == categories
@@ -41,7 +41,8 @@ class TestGetQuestions(object):
 class TestGetCategoryQuestions(object):
     def test_get_category_questions_success(self, client):
         category_id = 2
-        response = client.get('/categories/{}/questions'.format(category_id)).get_json()
+        response = client.get(
+            '/categories/{}/questions'.format(category_id)).get_json()
         assert response["success"]
         assert response["current_category"] == category_id
         assert response["total_questions"] == 4
@@ -51,7 +52,8 @@ class TestGetCategoryQuestions(object):
 
     def test_get_category_questions_failure(self, client):
         category_id = 10
-        response = client.get('/categories/{}/questions'.format(category_id)).get_json()
+        response = client.get(
+            '/categories/{}/questions'.format(category_id)).get_json()
         assert not response["success"]
         assert response["error"] == 404
 
@@ -59,16 +61,19 @@ class TestGetCategoryQuestions(object):
 class TestAddSearchQuestions(object):
     def test_search_question_success(self, client):
         search_term = "title"
-        response = client.post('/questions', json={'searchTerm': search_term}).get_json()
+        response = client.post('/questions',
+                               json={'searchTerm': search_term}).get_json()
         assert response["success"]
         for question in response["questions"]:
             assert search_term in question["question"]
 
     def test_add_question_success(self, client):
-        response = client.post(
-            '/questions',
-            json={'question': 'A question', 'answer': 'An answer', 'category': 1,
-                  'difficulty': 5}).get_json()
+        response = client.post('/questions',
+                               json={
+                                   'question': 'A question',
+                                   'answer': 'An answer', 'category': 1,
+                                   'difficulty': 5
+                               }).get_json()
         assert response["success"]
         assert response["new_question_id"]
 
@@ -94,24 +99,31 @@ class TestDeleteQuestions(object):
 
 class TestQuiz(object):
     def test_quiz_no_category_chosen_success(self, client):
-        response = client.post('/quizzes', json={'previous_questions': [],
-                                                 'quiz_category': None}).get_json()
+        response = client.post(
+            '/quizzes', json={'previous_questions': [],
+                              'quiz_category': None}).get_json()
         assert response["success"]
         assert response["previous_questions"][-1] == response["question"]['id']
 
     def test_quiz_category_chosen_success(self, client):
-        response = client.post('/quizzes', json={'previous_questions': [2],
-                                                 'quiz_category': {'type': 'Entertainment',
-                                                                   'id': '5'}}).get_json()
+        response = client.post(
+            '/quizzes',
+            json={
+                'previous_questions': [2],
+                'quiz_category': {'type': 'Entertainment', 'id': '5'}
+            }).get_json()
         assert response["success"]
         assert 2 in response["previous_questions"]
         assert response["question"]["id"] != 2
         assert response["previous_questions"][-1] == response["question"]['id']
 
     def test_quiz_category_no_more_questions(self, client):
-        response = client.post('/quizzes', json={'previous_questions': [2, 4, 6],
-                                                 'quiz_category': {'type': 'Entertainment',
-                                                                   'id': '5'}}).get_json()
+        response = client.post(
+            '/quizzes',
+            json={
+                'previous_questions': [2, 4, 6],
+                'quiz_category': {'type': 'Entertainment', 'id': '5'}
+            }).get_json()
         assert response["success"]
         assert 2 in response["previous_questions"]
         assert 4 in response["previous_questions"]
