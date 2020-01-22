@@ -69,6 +69,8 @@ def get_category_questions(category_id):
     Get all questions in one category.
     """
     category = Category.query.get(category_id)
+    if category is None:
+        abort(404)
     questions = category.questions
     if len(questions) == 0:
         abort(404)
@@ -112,11 +114,10 @@ def add_or_search_questions():
             'success': True, 'questions': formatted_qs, 'total_questions': len(questions),
             'current_category': None
         })
-        pass
     else:
-        # category is string in form because JS object key but needs to be int for DB
-        request_data['category'] = int(request_data['category'])
         try:
+            # category is string in form because JS object key but needs to be int for DB
+            request_data['category'] = int(request_data['category'])
             new_question = Question(**request_data)
             new_question.insert()
             return jsonify({'success': True, 'new_question_id': new_question.id})
@@ -135,18 +136,19 @@ def quiz():
     Should return a question that was not previously seen already from the chosen category.
     """
     request_data = request.get_json()
-    category = Category.query.get(int(request_data['quiz_category']['id']))
     # no category chosen
-    if category is None:
+    if not request_data.get("quiz_category"):
         questions = Question.query.all()
     else:
+        category = Category.query.get(int(request_data['quiz_category']['id']))
         questions = category.questions
     remaining_qs = [q for q in questions if q.id not in request_data["previous_questions"]]
     # if there are still remaining questions
     if remaining_qs:
         next_q = remaining_qs[0].format()
-        new_prev_qs = request_data["previous_questions"].extend([next_q["id"]])
-        return jsonify({'success': True, 'question': next_q, 'previous_questions': new_prev_qs})
+        prev_qs = request_data["previous_questions"]
+        prev_qs.extend([next_q["id"]])
+        return jsonify({'success': True, 'question': next_q, 'previous_questions': prev_qs})
     # no more remaining questions
     else:
         return jsonify({'success': True, 'question': None, 'previous_questions': request_data["previous_questions"]})
@@ -162,19 +164,6 @@ def bad_request(error):
     return jsonify({'success': False, 'error': 400, 'message': 'Bad request'}), 400
 
 
-'''
-@TODO: 
-Create a POST endpoint to get questions to play the quiz. 
-This endpoint should take category and previous question parameters 
-and return a random questions within the given category, 
-if provided, and that is not one of the previous questions. 
-
-TEST: In the "Play" tab, after a user selects "All" or a category,
-one question at a time is displayed, the user is allowed to answer
-and shown whether they were correct or not. 
-'''
-'''
-@TODO: 
-Create error handlers for all expected errors 
-including 404 and 422. 
-'''
+@api.errorhandler(422)
+def unprocessable(error):
+    return jsonify({'success': False, 'error': 422, 'message': 'Unproceessable entity'})

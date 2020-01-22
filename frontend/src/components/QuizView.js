@@ -146,7 +146,7 @@ class QuizView extends Component {
     return (
       <div className="quiz-play-holder">
         <div className="final-header"> Your Final Score is {this.state.numCorrect}</div>
-        <br/>
+        <br />
         <Button variant="primary" type="submit" onClick={this.restartGame}>Play again?</Button>
       </div>
     )
@@ -180,7 +180,7 @@ class QuizView extends Component {
             <div className="quiz-question">{this.state.currentQuestion.question}</div>
             <Form onSubmit={this.submitGuess}>
               <Form.Group>
-                <Form.Control type="text" name="guess" onChange={this.handleChange}/>
+                <Form.Control type="text" name="guess" onChange={this.handleChange} />
               </Form.Group>
               <Button type="submit">Guess</Button>
             </Form>

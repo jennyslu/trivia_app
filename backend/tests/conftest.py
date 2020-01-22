@@ -24,9 +24,10 @@ def app():
     db.engine.execute(_data_sql)
 
     yield app
-    print('teardown')
+    print('app teardown')
     # for some reason this doesn't work - WHY????? db.drop_all()
     db.engine.execute('DROP TABLE questions; DROP TABLE categories;')
+    db.session.close()
 
 
 @pytest.fixture(scope='session')
