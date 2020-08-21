@@ -30,6 +30,7 @@ This will install all of the required packages we selected within the `requireme
 With Postgres running, restore a database using the trivia.psql file provided. From the backend folder in terminal run:
 
 ```bash
+createdb trivia
 psql trivia < flaskr/trivia.psql
 ```
 
@@ -43,7 +44,7 @@ mkdir instance
 touch instance/config.py
 ```
 Edit `instance/config.py` to contain any secret values you want.
-Also edit `config/development.py` to point to your local databsek.
+Also edit `config/development.py` to point to your local database.
 
 To run the server, execute:
 
